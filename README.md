@@ -72,7 +72,7 @@ com.startuphub
 
 ## Relação com o outro projeto do portfólio
 
-Este projeto trabalha em paralelo com o [Queue Management API](../queue-management-api), que já está na v1 concluída (domínio, API REST, persistência MySQL, tratamento de erros HTTP). Enquanto o Queue Management API evolui para sua v2 (testes automatizados, CI/CD, Bean Validation), o StartupHub cobre uma lacuna diferente do portfólio: autenticação, autorização e, futuramente, arquitetura multiempresa.
+Este projeto trabalha em paralelo com o projeto de Fila de Atendimento, que já está na v1 concluída (domínio, API REST, persistência MySQL, tratamento de erros HTTP). Enquanto ele evolui para sua v2 (testes automatizados, CI/CD, Bean Validation), o StartupHub cobre uma lacuna diferente do portfólio: autenticação, autorização e, futuramente, arquitetura multiempresa.
 
 ## Como rodar
 
