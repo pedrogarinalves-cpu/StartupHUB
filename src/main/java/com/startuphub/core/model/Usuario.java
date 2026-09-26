@@ -2,7 +2,6 @@ package com.startuphub.core.model;
 
 import jakarta.persistence.*;
 
-import javax.management.relation.Role;
 import java.util.Objects;
 
 @Entity
@@ -19,11 +18,19 @@ public class Usuario {
 
    private String senha;
 
-   @Enumerated(EnumType.STRING)
-   private Role role;
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
     public Usuario(Long id, String nome, String email, String senha, Role role) {
         this.id = id;
+        this.nome = nome;
+        this.email = email;
+        this.senha = senha;
+        this.role = role;
+    }
+
+
+    public Usuario(String nome, String email, String senha, Role role) {
         this.nome = nome;
         this.email = email;
         this.senha = senha;
