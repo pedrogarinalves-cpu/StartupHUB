@@ -4,7 +4,7 @@ Plataforma de gestão interna para pequenas startups/equipes de tecnologia, dese
 
 ## Status do projeto
 
-**Em desenvolvimento inicial.** Primeira entidade de domínio (`Usuario`) criada. Autenticação, demais entidades e API REST ainda por vir.
+**Em desenvolvimento inicial.** Entidades de domínio (`Usuario`, `Role`) e repositório criados. Primeiras peças do Spring Security implementadas: codificação de senha (BCrypt), cadastro de usuário com senha hasheada, e a ponte entre `Usuario` e o mecanismo de autenticação do Spring (`UserDetails`). Configuração completa da autenticação (login, geração de token JWT, filtro de segurança) ainda em andamento.
 
 ## Sobre o projeto
 
@@ -20,33 +20,43 @@ Para manter o projeto viável como estudo em paralelo a outro projeto principal,
 - **Tarefa**
 - Autenticação simples com Spring Security + JWT
 
-**Multi-tenancy (conceito de "Empresa", isolando dados entre organizações diferentes) foi deliberadamente deixado para a v2**, junto com funcionalidades mais avançadas como tickets, dashboard e integração com a API do GitHub. A decisão foi tomada para evitar acumular complexidade (autenticação + multi-tenancy ao mesmo tempo) antes de ter uma base sólida funcionando.
+**Multi-tenancy (conceito de "Empresa", isolando dados entre organizações diferentes) foi deliberadamente deixado para a v2**, junto com funcionalidades mais avançadas como tickets, dashboard e integração com a API do GitHub.
 
 ## Estrutura do projeto
 
 ```
 com.startuphub
 ├── core/
-│   ├── model/        → Entidades de domínio (Usuario, Role, ...)
-│   ├── repository/   → Repositórios JPA
-│   ├── service/       → Lógica de negócio
-│   └── exception/     → Exceções de domínio
+│   ├── model/        → Entidades de domínio (Usuario, Role)
+│   ├── repository/   → Repositórios JPA (UsuarioRepository)
+│   ├── service/       → Lógica de negócio (UsuarioService)
+│   └── exception/     → Exceções de domínio (a definir)
 └── api/
-    ├── dto/           → Objetos de entrada/saída da API
-    ├── controller/    → Endpoints REST
-    └── security/      → Configuração do Spring Security e JWT
+    ├── dto/           → Objetos de entrada/saída da API (a definir)
+    ├── controller/    → Endpoints REST (a definir)
+    └── security/      → Configuração do Spring Security e JWT (SecurityConfig, UsuarioDetails, AutenticacaoService)
 ```
 
-## Domínio (em construção)
+## Domínio
 
-- **Usuario**: entidade JPA com `id`, `nome`, `email` (único, usado como login) e `senha` (armazenada como hash, nunca em texto puro).
-- **Role**: enum com os papéis de acesso (`ADMIN`, `GESTOR`, `MEMBRO`), que futuramente vão diferenciar permissões dentro do sistema.
+- **Usuario**: entidade JPA com `id`, `nome`, `email` (único, usado como login) e `senha` (armazenada como hash via BCrypt, nunca em texto puro). Possui construtor completo (com `id`, usado pelo Hibernate) e um construtor reduzido para criação de novos usuários.
+- **Role**: enum com os papéis de acesso (`ADMIN`, `GESTOR`, `MEMBRO`).
+
+## Autenticação (em construção)
+
+Peças do Spring Security implementadas até agora:
+
+- **`SecurityConfig`**: classe de configuração (`@Configuration`) que expõe o `PasswordEncoder` (implementação `BCryptPasswordEncoder`) como Bean gerenciado pelo Spring.
+- **`UsuarioService`**: contém o método `cadastrar(...)`, responsável por transformar a senha em texto puro num hash (via `PasswordEncoder`) antes de persistir o `Usuario`.
+- **`UsuarioDetails`**: classe que implementa a interface `UserDetails` do Spring Security, adaptando a entidade `Usuario` para o formato que o framework entende durante a autenticação (username, senha, papéis/authorities).
+
+Próximas peças a implementar: `AutenticacaoService` (implementando `UserDetailsService`, para o Spring Security buscar o usuário pelo email durante o login), geração e validação de token JWT, filtro de segurança (`OncePerRequestFilter`) e os endpoints de cadastro/login.
 
 ## Tecnologias
 
 - Java 17
 - Spring Boot
-- Spring Security (JWT) — em implementação
+- Spring Security (BCrypt implementado; JWT em implementação)
 - Spring Data JPA
 - MySQL
 - Maven
@@ -55,8 +65,13 @@ com.startuphub
 
 ## Próximos passos
 
-- [ ] `UsuarioRepository`
-- [ ] Configuração do Spring Security (filtro de autenticação, geração e validação de JWT)
+- [x] `UsuarioRepository`
+- [x] `PasswordEncoder` (BCrypt) configurado
+- [x] `UsuarioService` com cadastro e hash de senha
+- [x] `UsuarioDetails` (adaptação para `UserDetails`)
+- [ ] `AutenticacaoService` (`UserDetailsService`)
+- [ ] Geração e validação de JWT
+- [ ] Filtro de segurança e `SecurityConfig` completo (rotas públicas x protegidas)
 - [ ] Endpoints de cadastro e login
 - [ ] Entidades `Cliente`, `Projeto`, `Tarefa`
 - [ ] API REST para gestão de projetos e tarefas
@@ -72,7 +87,7 @@ com.startuphub
 
 ## Relação com o outro projeto do portfólio
 
-Este projeto trabalha em paralelo com o projeto de Fila de Atendimento, que já está na v1 concluída (domínio, API REST, persistência MySQL, tratamento de erros HTTP). Enquanto ele evolui para sua v2 (testes automatizados, CI/CD, Bean Validation), o StartupHub cobre uma lacuna diferente do portfólio: autenticação, autorização e, futuramente, arquitetura multiempresa.
+Este projeto trabalha em paralelo com o [Queue Management API](../queue-management-api), que já está na v1 concluída (domínio, API REST, persistência MySQL, tratamento de erros HTTP) e com a v2 em andamento (testes automatizados concluídos). Enquanto o Queue Management API segue evoluindo, o StartupHub cobre uma lacuna diferente do portfólio: autenticação, autorização e, futuramente, arquitetura multiempresa.
 
 ## Como rodar
 
@@ -80,4 +95,4 @@ Este projeto trabalha em paralelo com o projeto de Fila de Atendimento, que já 
 ./mvnw spring-boot:run
 ```
 
-> Observação: projeto em fase inicial. Autenticação e demais funcionalidades ainda não implementadas.
+> Observação: projeto em fase inicial. Autenticação ainda não está funcional de ponta a ponta (faltam login, JWT e filtro de segurança).
