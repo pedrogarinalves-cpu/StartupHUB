@@ -21,6 +21,8 @@ public class Usuario {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    public Usuario() {}
+
     public Usuario(Long id, String nome, String email, String senha, Role role) {
         this.id = id;
         this.nome = nome;
