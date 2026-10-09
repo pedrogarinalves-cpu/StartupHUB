@@ -1,10 +1,14 @@
 package com.startuphub.core.model;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.Objects;
 
 @Entity
+@Getter
+@NoArgsConstructor
 public class Usuario {
 
     @Id
@@ -21,7 +25,6 @@ public class Usuario {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    public Usuario() {}
 
     public Usuario(Long id, String nome, String email, String senha, Role role) {
         this.id = id;
@@ -37,22 +40,6 @@ public class Usuario {
         this.email = email;
         this.senha = senha;
         this.role = role;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getNome() {
-        return nome;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public String getSenha() {
-        return senha;
     }
 
     public Role getRole() {
@@ -77,7 +64,6 @@ public class Usuario {
                 "id=" + id +
                 ", nome='" + nome + '\'' +
                 ", email='" + email + '\'' +
-                ", senha='" + senha + '\'' +
                 ", role=" + role +
                 '}';
     }
